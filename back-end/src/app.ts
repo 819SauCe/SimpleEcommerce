@@ -9,6 +9,7 @@ import { requireAuth } from './auth/requireAuth';
 import { login } from './api/services/loginService';
 import { register } from './api/services/registerService';
 import { logout } from './api/services/logoutService';
+import { resetPassword } from './api/services/resetPassword';
 
 const app = express();
 const limiter = rateLimit({ windowMs: 900000, max: 100, message: 'Too many requests' })
@@ -23,5 +24,8 @@ app.use(cookieParser());
 app.post("/auth/login", login);
 app.post("/auth/register", register);
 app.get("/auth/logout", requireAuth, logout);
+app.get("/auth/refresh", requireAuth, login);
+app.post("/auth/reset-password", resetPassword);
+app.post("/auth/reset-password/:token", resetPassword);
 
 app.listen(port,  () => { console.log(`${http}://${host}:${port}`); })
