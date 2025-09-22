@@ -1,4 +1,4 @@
-import { db } from "../config";
+import { db } from "../../config";
 
 export async function getUserByEmail(email: string) {
     try {

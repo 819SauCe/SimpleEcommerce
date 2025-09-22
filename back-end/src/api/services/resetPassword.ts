@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { satinizeEmail } from '../../utils/satinizeEmail';
-import { getUserByEmail } from '../../utils/getUserByEmail';
+import { getUserByEmail } from '../repository/getUserByEmail';
 import { signAccessToken } from '../../auth/jwt';
 import { hashPassword } from '../../utils/hashPassword';
 import { db, resendApiKey } from '../../config';
