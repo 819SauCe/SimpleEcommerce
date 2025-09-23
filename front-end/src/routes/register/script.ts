@@ -26,13 +26,15 @@ export async function loadCaptcha() {
   }
 }
 
-export async function sendLogin(email: string, password: string, captchaAnswerVal: string, captchaTokenVal: string) {
+export async function sendRegister(firstName:string, lastName: string, email: string, password: string, captchaAnswerVal: string, captchaTokenVal: string) {
   try {
-    const res = await fetch(`${base}/auth/login`, {
+    const res = await fetch(`${base}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({
+        firstName,
+        lastName,
         email,
         password,
         captchaAnswer: captchaAnswerVal,

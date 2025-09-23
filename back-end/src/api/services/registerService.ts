@@ -6,6 +6,7 @@ import { satinizeEmail } from '../../utils/satinizeEmail';
 import { getUserByEmail } from '../repository/getUserByEmail';
 import { signAccessToken, signRefreshToken } from '../../auth/jwt';
 import { jwt_refresh_expires, development } from '../../config';
+import { verifyCaptchaToken } from '../../utils/captcha';
 import { db } from '../../config';
 import '../../config';
 
@@ -18,6 +19,11 @@ export async function register(req: Request, res: Response) {
     if (!req.body.lastName) return res.status(400).json("Error on register: last name is empty");
     if (!req.body.email) return res.status(400).json("Error on register: email is empty");
     if (!req.body.password) return res.status(400).json("Error on register: password is empty");
+
+    const { captchaAnswer, captchaToken } = req.body;
+    if (!verifyCaptchaToken(captchaToken, captchaAnswer)) {
+        return res.status(400).json({ error: true, message: "Captcha inválido ou expirado" });
+    }
     try {
         const email = satinizeEmail(req.body.email);
         const alreadyExists = await getUserByEmail(email);

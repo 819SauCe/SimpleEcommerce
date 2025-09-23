@@ -4,6 +4,7 @@ import { getUserByEmail } from '../repository/getUserByEmail';
 import { signAccessToken } from '../../auth/jwt';
 import { hashPassword } from '../../utils/hashPassword';
 import { db, resendApiKey } from '../../config';
+import { verifyCaptchaToken } from '../../utils/captcha';
 import '../../config';
 import { Resend } from 'resend';
 
@@ -12,6 +13,11 @@ const resend = new Resend(resendApiKey);
 export async function resetPassword(req: Request, res: Response) {
   if (!req.body) return res.status(400).json('Error on reset password: request body is empty');
   if (!req.body.email) return res.status(400).json('Error on reset password: email is empty');
+
+  const { captchaAnswer, captchaToken } = req.body;
+  if (!verifyCaptchaToken(captchaToken, captchaAnswer)) {
+    return res.status(400).json({ error: true, message: "Captcha inválido ou expirado" });
+  }
 
   try {
     const email = satinizeEmail(req.body.email);
