@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { verifyHashPassword } from '../../utils/verifyHashPassword';
 import { satinizeEmail } from '../../utils/satinizeEmail';
-import { getUserByEmail } from '../../utils/getUserByEmail';
+import { getUserByEmail } from '../repository/getUserByEmail';
 import { signAccessToken, signRefreshToken } from '../../auth/jwt';
 import { jwt_refresh_expires, development } from '../../config';
 import { verifyAccessToken } from '../../auth/jwt';
