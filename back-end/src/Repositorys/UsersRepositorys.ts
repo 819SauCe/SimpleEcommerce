@@ -16,7 +16,7 @@ export async function searchUserByEmail(email: string){
 
 export async function searchUserById(id: string){
   try {
-    const query = 'SELECT * FROM users WHERE id = $1';
+    const query = 'SELECT id, first_name, last_name, user_image FROM users WHERE id = $1';
     const values = [id];
     const result = await pool.query(query, values);
     return result.rows[0];
