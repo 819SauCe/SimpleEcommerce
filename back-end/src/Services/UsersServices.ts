@@ -2,11 +2,14 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { validateEmail } from '../Utils/validateEmail';
 import { validatePassword } from '../Utils/validatePassword';
-import { searchUserByEmail, searchUserById, createUser } from '../Repositorys/UsersRepositorys';
+import { searchUserByEmail, searchUserById, createUser, searchRoleByName, createUserRole } from '../Repositorys/UsersRepositorys';
 import { COOKIE_NAME, cookieOpts } from '../Config/auth';
 import { signSession } from '../Config/jwt';
 import { validateFirstName, validateLastName } from '../Utils/validateNames';
 
+// Vamos colocar no futuro uma verificação para saber se o email pertence ao usuário
+// utilizaremos resend e token para enviar um email de verificação
+// além disso vamos integrar captcha para evitar bots
 export async function UserRegister(req: Request, res: Response) {
   try {
     const email = validateEmail(req.body.email);
@@ -17,7 +20,10 @@ export async function UserRegister(req: Request, res: Response) {
     const password = validatePassword(req.body.password);
     const KeepMeLoggedIn = req.body.keepMeLoggedIn;
     await createUser({ email, firstName, lastName, password });
+    const clientRole = await searchRoleByName('client');
     const user = await searchUserByEmail(email);
+    await createUserRole(user.id, clientRole.id, "1");
+
 
     if (KeepMeLoggedIn) {
       const sessionToken = signSession({ sub: String(user.id), email: user.email });
@@ -26,6 +32,7 @@ export async function UserRegister(req: Request, res: Response) {
 
     res.status(201).json({ message: 'User registered successfully' });
   }catch(error: any) {
+    console.log(error.message);
     if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
     if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
     if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });

@@ -40,3 +40,42 @@ export async function createUser({ email, firstName, lastName, password }: { ema
     throw error;
   }
 }
+
+export async function createUserRole(userId: string, roleId: string, projectId: string){
+  try {
+    const query = 'INSERT INTO user_roles (user_id, role_id, project_id) VALUES ($1, $2, $3) RETURNING *';
+    const values = [userId, roleId, projectId];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function searchRoleByName(name: string){
+  try {
+    const query = 'SELECT * FROM roles WHERE name = $1';
+    const values = [name];
+    const result = await pool.query(query, values);
+    return result.rows[0];
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
+export async function searchUserRoleByUserId(userId: string, projectId: string){
+  try {
+    const query = 'SELECT * FROM user_roles WHERE user_id = $1 AND project_id = $2';
+    const values = [userId, projectId];
+    const result = await pool.query(query, values);
+    return result.rows;
+
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
