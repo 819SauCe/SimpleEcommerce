@@ -1,6 +1,6 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
-import { UserLogin, Logout, UserMe, UserRegister } from './Services/UsersServices';
+import { UserLogin, Logout, UserMe, UserRegister, getUsers } from './Services/UsersService';
 import { IssueOneTimeToken } from './Controllers/tokenController';
 import { requireSession } from './middlewares/requireSession';
 import { requireOneTimeBearer } from './middlewares/oneTimeBearer';
@@ -15,6 +15,8 @@ app.post('/login', authLimiter, UserLogin);
 app.post('/register', authLimiter, UserRegister);
 app.get('/me', requireSession, UserMe);
 app.get('/logout', authLimiter, Logout);
-app.get('/token', authLimiter, requireSession, IssueOneTimeToken);
+app.get('/token', requireSession, IssueOneTimeToken);
 
-app.listen(3000, () => console.log('API on :3000'));
+app.get('/users', requireSession, requireOneTimeBearer, getUsers)
+
+app.listen(3000);

@@ -5,3 +5,7 @@
 .env/*
 node_modules/
 node_modules/*
+.fleet
+*/fleet
+.vscode
+*/vscode

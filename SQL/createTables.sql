@@ -1,14 +1,14 @@
-CREATE TABLE Users (
+CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL,
     CPF VARCHAR(14),
-    userImage VARCHAR(255),
+    user_image VARCHAR(255),
     password VARCHAR(300) NOT NULL
 );
 
-CREATE TABLE UsersAddresses (
+CREATE TABLE users_addresses (
     id SERIAL PRIMARY KEY,
     userId INTEGER NOT NULL,
     street VARCHAR(255),
@@ -21,7 +21,7 @@ CREATE TABLE UsersAddresses (
     zipCode VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE Roles (
+CREATE TABLE roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
     description VARCHAR(255) NOT NULL

@@ -2,10 +2,18 @@ import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import { validateEmail } from '../Utils/validateEmail';
 import { validatePassword } from '../Utils/validatePassword';
-import { searchUserByEmail, searchUserById, createUser, searchRoleByName, createUserRole } from '../Repositorys/UsersRepositorys';
 import { COOKIE_NAME, cookieOpts } from '../Config/auth';
 import { signSession } from '../Config/jwt';
 import { validateFirstName, validateLastName } from '../Utils/validateNames';
+import {
+  searchUserByEmail,
+  searchUserById,
+  createUser,
+  searchRoleByName,
+  createUserRole,
+  searchUsers,
+  getRoleByUserId
+} from '../Repositorys/UsersRepository';
 
 // Vamos colocar no futuro uma verificação para saber se o email pertence ao usuário
 // utilizaremos resend e token para enviar um email de verificação
@@ -31,7 +39,7 @@ export async function UserRegister(req: Request, res: Response) {
     }
 
     res.status(201).json({ message: 'User registered successfully' });
-  }catch(error: any) {
+  } catch (error: any) {
     console.log(error.message);
     if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
     if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
@@ -40,7 +48,7 @@ export async function UserRegister(req: Request, res: Response) {
   }
 }
 
-export async function UserLogin(req: Request, res: Response)  {
+export async function UserLogin(req: Request, res: Response) {
   try {
     const email = validateEmail(req.body.email);
     const password = validatePassword(req.body.password);
@@ -56,7 +64,7 @@ export async function UserLogin(req: Request, res: Response)  {
     }
 
     return res.status(200).json({ message: 'Logged in successfully' });
-  }catch(error: any) {
+  } catch (error: any) {
     if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
     if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
     if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
@@ -70,7 +78,7 @@ export async function UserMe(req: Request, res: Response) {
     const user = await searchUserById(id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     return res.status(200).json({ user });
-  }catch(error: any) {
+  } catch (error: any) {
     if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
     if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
     if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
@@ -81,4 +89,40 @@ export async function UserMe(req: Request, res: Response) {
 export function Logout(_req: Request, res: Response) {
   res.clearCookie(COOKIE_NAME, { path: '/' });
   return res.status(200).json({ message: 'Logged out' });
+}
+
+export async function getUsers(req: Request, res: Response) {
+  try {
+    const { id } = req.user!;
+    const isAdmin = await getRoleByUserId(id);
+    if (isAdmin.project_id === 1) {
+      const users = await searchUsers();
+      return res.status(200).json({ users });
+    }
+    return res.status(403).json({ error: 'Forbidden' });
+  } catch (error: any) {
+    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
+    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
+    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export async function genUser(req: Request, res: Response) {
+  try {
+    const { id } = req.user!;
+    const isAdmin = await getRoleByUserId(id);
+    if (isAdmin.project_id !== 1) return res.status(403).json({ error: 'Forbidden' });
+    const { firstName, lastName, email, password } = req.body;
+    await createUser({ email, firstName, lastName, password });
+    const clientRole = await searchRoleByName('client');
+    const user = await searchUserByEmail(email);
+    await createUserRole(user.id, clientRole.id, "1");
+
+  } catch (error: any) {
+    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
+    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
+    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
+    return res.status(500).json({ error: error.message });
+  }
 }
