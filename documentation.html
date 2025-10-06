@@ -1,32 +1,148 @@
 <!doctype html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Guia rápido da API — SimpleEcommerce</title>
   <style>
-    :root { --bg:#0b0c10; --card:#111218; --text:#e6e6e6; --muted:#a8a8a8; --acc:#82e0aa; }
-    * { box-sizing: border-box; }
-    html, body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji","Segoe UI Emoji"; }
-    a { color: var(--acc); text-decoration: none; }
-    .wrap { max-width: 960px; margin: 40px auto; padding: 0 16px; }
-    h1 { font-size: 28px; margin: 0 0 16px; }
-    h2 { font-size: 22px; margin: 32px 0 12px; }
-    h3 { font-size: 18px; margin: 24px 0 8px; }
-    p, li, pre { line-height: 1.55; }
-    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-    .card { background: var(--card); border: 1px solid #1b1d29; border-radius: 12px; padding: 18px; margin: 14px 0; }
-    .muted { color: var(--muted); }
-    .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
-    .badge { display:inline-block; padding:2px 8px; border-radius:999px; background:#1b1d29; border:1px solid #2a2d3a; color:#cfd3dc; font-size:12px; }
-    details { background:#0f1016; border:1px solid #1b1d29; border-radius:10px; padding:12px 14px; }
-    details > summary { cursor:pointer; font-weight:600; }
-    pre { background:#0f1016; border:1px solid #1b1d29; border-radius:10px; padding:12px; overflow:auto; }
-    .method { font-weight:700; letter-spacing: .02em; }
-    .get { color:#7bdcff; } .post { color:#a0e084; } .del { color:#ff9ba3; } .put { color:#ffd27b; }
-    .kbd { padding: 2px 6px; border:1px solid #444; border-bottom-width:2px; border-radius:6px; background:#191a22; }
+    :root {
+      --bg: #0b0c10;
+      --card: #111218;
+      --text: #e6e6e6;
+      --muted: #a8a8a8;
+      --acc: #82e0aa;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+    }
+
+    a {
+      color: var(--acc);
+      text-decoration: none;
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin: 0 0 16px;
+    }
+
+    h2 {
+      font-size: 22px;
+      margin: 32px 0 12px;
+    }
+
+    h3 {
+      font-size: 18px;
+      margin: 24px 0 8px;
+    }
+
+    p,
+    li,
+    pre {
+      line-height: 1.55;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid #1b1d29;
+      border-radius: 12px;
+      padding: 18px;
+      margin: 14px 0;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1b1d29;
+      border: 1px solid #2a2d3a;
+      color: #cfd3dc;
+      font-size: 12px;
+    }
+
+    details {
+      background: #0f1016;
+      border: 1px solid #1b1d29;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    details>summary {
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    pre {
+      background: #0f1016;
+      border: 1px solid #1b1d29;
+      border-radius: 10px;
+      padding: 12px;
+      overflow: auto;
+    }
+
+    .method {
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .get {
+      color: #7bdcff;
+    }
+
+    .post {
+      color: #a0e084;
+    }
+
+    .del {
+      color: #ff9ba3;
+    }
+
+    .put {
+      color: #ffd27b;
+    }
+
+    .kbd {
+      padding: 2px 6px;
+      border: 1px solid #444;
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      background: #191a22;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <h1>Guia rápido da API — SimpleEcommerce</h1>
@@ -41,11 +157,13 @@
     <div class="grid">
       <div class="card">
         <h3>Autenticação (Cookie)</h3>
-        <p>As rotas protegidas esperam um cookie de sessão definido por <code>/login</code> ou <code>/register</code> com <code>keepMeLoggedIn=true</code>.</p>
+        <p>As rotas protegidas esperam um cookie de sessão definido por <code>/login</code> ou <code>/register</code>
+          com <code>keepMeLoggedIn=true</code>.</p>
       </div>
       <div class="card">
         <h3>Bearer One-Time</h3>
-        <p>Algumas rotas exigem header <code>Authorization: Bearer &lt;token&gt;</code>, obtido via <code>/token</code>.</p>
+        <p>Algumas rotas exigem header <code>Authorization: Bearer &lt;token&gt;</code>, obtido via <code>/token</code>.
+        </p>
       </div>
     </div>
 
@@ -53,7 +171,7 @@
     <div class="card">
       <div><span class="badge"><span class="method post">POST</span> /register</span></div>
       <p>Registra usuário e (se <code>keepMeLoggedIn=true</code>) já define o cookie de sessão.</p>
-<pre><code>POST /register
+      <pre><code>POST /register
 Content-Type: application/json
 
 {
@@ -68,7 +186,7 @@ Content-Type: application/json
     <div class="card">
       <div><span class="badge"><span class="method post">POST</span> /login</span></div>
       <p>Autentica e grava cookie de sessão quando <code>keepMeLoggedIn=true</code>.</p>
-<pre><code>POST /login
+      <pre><code>POST /login
 Content-Type: application/json
 
 { "email":"ana@example.com", "password":"SenhaF0rte!", "keepMeLoggedIn": true }</code></pre>
@@ -77,20 +195,20 @@ Content-Type: application/json
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /me</span></div>
       <p>Retorna o usuário autenticado (requer cookie).</p>
-<pre><code>GET /me</code></pre>
+      <pre><code>GET /me</code></pre>
     </div>
 
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /token</span></div>
       <p>Emite um token One-Time (requer cookie). Use no header <code>Authorization</code>.</p>
-<pre><code>GET /token
+      <pre><code>GET /token
 Authorization: (cookie já enviado pelo navegador)</code></pre>
     </div>
 
     <h2>Lojas</h2>
     <div class="card">
       <div><span class="badge"><span class="method post">POST</span> /stores</span></div>
-<pre><code>POST /stores
+      <pre><code>POST /stores
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
 Content-Type: application/json
 
@@ -103,14 +221,14 @@ Content-Type: application/json
 
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /stores/:storeId</span></div>
-<pre><code>GET /stores/1
+      <pre><code>GET /stores/1
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
     </div>
 
     <h2>Páginas</h2>
     <div class="card">
       <div><span class="badge"><span class="method post">POST</span> /stores/:storeId/pages</span></div>
-<pre><code>POST /stores/1/pages
+      <pre><code>POST /stores/1/pages
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
 Content-Type: application/json
 
@@ -128,13 +246,13 @@ Content-Type: application/json
 
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/pages</span></div>
-<pre><code>GET /stores/1/pages?status=published
+      <pre><code>GET /stores/1/pages?status=published
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
     </div>
 
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/pages/... (middleware)</span></div>
-<pre><code># /sobre
+      <pre><code># /sobre
 GET /stores/1/pages/sobre
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
 
@@ -145,7 +263,7 @@ Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
 
     <div class="card">
       <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/page?path=...</span></div>
-<pre><code>GET /stores/1/page?path=%2F
+      <pre><code>GET /stores/1/page?path=%2F
 Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
     </div>
 
@@ -164,4 +282,5 @@ Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
     </div>
   </div>
 </body>
+
 </html>
