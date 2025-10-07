@@ -18,7 +18,6 @@ export async function upsertPageByPath(req: Request, res: Response) {
 
     const body = req.body || {};
     if (!body.path) return res.status(400).json({ error: 'path é obrigatório' });
-    // normaliza path
     const path = ('' + body.path).trim();
     if (!path.startsWith('/')) body.path = '/' + path;
 

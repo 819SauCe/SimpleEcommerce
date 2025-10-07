@@ -1,10 +1,6 @@
 import pool from "../Config/connectDB";
 
-export async function upsertPageRepo(storeId: number, p: {
-  path: string; name?: string; type?: string;
-  header?: any; footer?: any; content?: any; seo?: any;
-  canonical_url?: string | null; status?: 'draft'|'published';
-}) {
+export async function upsertPageRepo(storeId: number, p: {path: string; name?: string; type?: string; header?: any; footer?: any; content?: any; seo?: any; canonical_url?: string | null; status?: 'draft'|'published'; }) {
   const name = p.name ?? 'Page';
   const type = p.type ?? 'static';
   const status = p.status ?? 'draft';
@@ -60,9 +56,6 @@ export async function listPagesRepo(storeId: number, status?: string) {
 }
 
 export async function getPageByPathRepo(storeId: number, path: string) {
-  const { rows } = await pool.query(
-    `SELECT * FROM pages WHERE store_id=$1 AND path=$2`,
-    [storeId, path]
-  );
+  const { rows } = await pool.query(`SELECT * FROM pages WHERE store_id=$1 AND path=$2`, [storeId, path]);
   return rows[0] || null;
 }

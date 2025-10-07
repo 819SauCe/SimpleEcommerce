@@ -94,15 +94,10 @@ export async function getRoleByUserId(userId: string) {
 
 export async function searchUsers() {
   try {
-    const usersQuery = `
-      SELECT id, first_name, last_name, email, cpf, user_image
-      FROM users
-    `;
+    const usersQuery = `SELECT id, first_name, last_name, email, cpf, user_image FROM users`;
     const usersResult = await pool.query(usersQuery);
-
     const userRolesQuery = `SELECT * FROM user_roles WHERE user_id = $1`;
     const roleByIdQuery = `SELECT * FROM roles WHERE id = $1`;
-
     const usersWithRoles = await Promise.all(
       usersResult.rows.map(async (user) => {
         const rolesRes = await pool.query(userRolesQuery, [user.id]);
