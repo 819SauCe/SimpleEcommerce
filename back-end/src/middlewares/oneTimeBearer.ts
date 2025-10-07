@@ -10,11 +10,7 @@ export function requireOneTimeBearer(req: Request, res: Response, next: NextFunc
 
   const result = consumeOneTimeToken(token);
   if (!result.ok) {
-    const map = {
-      not_found: 'Token not found',
-      used: 'Token already used',
-      expired: 'Token expired',
-    } as const;
+    const map = { not_found: 'Token not found', used: 'Token already used', expired: 'Token expired' } as const;
     return res.status(401).json({ error: map[result.reason] });
   }
 
