@@ -15,7 +15,7 @@ export function Login() {
       return;
     }
 
-    fetch(`http://localhost:3000/api/login`, {
+    fetch(`http://localhost:8080/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -29,7 +29,7 @@ export function Login() {
     <main className={styles.main}>
       <div className={styles.login_container}>
         <div>
-          <h1 className={styles.title_login_container}>login</h1>
+          <h1 className={styles.title_login_container}>Wellcome back</h1>
         </div>
         <div className={styles.input_container}>
           <label htmlFor="email">Email:</label>
