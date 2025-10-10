@@ -1,61 +1,46 @@
-CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
-    first_name VARCHAR(50) NOT NULL,
-    last_name VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    CPF VARCHAR(14),
-    user_image VARCHAR(255),
-    password VARCHAR(300) NOT NULL
+create table if not exists users (
+  id serial primary key,
+  email text not null unique,
+  first_name text not null,
+  last_name text not null,
+  password text not null,
+  cpf text,
+  user_image text,
+  created_at timestamp default now()
 );
 
-CREATE TABLE users_addresses (
-    id SERIAL PRIMARY KEY,
-    userId INTEGER NOT NULL,
-    street VARCHAR(255),
-    number VARCHAR(10),
-    complement VARCHAR(255),
-    neighborhood VARCHAR(255),
-    city VARCHAR(85),
-    state VARCHAR(33),
-    country VARCHAR(255),
-    zipCode VARCHAR(20) NOT NULL
+create table if not exists stores (
+  id serial primary key,
+  owner_id int references users(id) on delete set null,
+  name text not null,
+  handle text not null unique,
+  primary_domain text unique,
+  created_at timestamp default now()
 );
 
-CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(30) NOT NULL,
-    description VARCHAR(255) NOT NULL
+create table if not exists roles (
+  id serial primary key,
+  name text not null unique,
+  description text
 );
 
-CREATE TABLE user_roles (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER NOT NULL,
-    role_id INTEGER NOT NULL,
-    project_id INTEGER NOT NULL
+create table if not exists permissions (
+  id serial primary key,
+  name text not null unique
 );
 
-CREATE TABLE IF NOT EXISTS stores (
-    id SERIAL PRIMARY KEY,
-    owner_id INTEGER NOT NULL REFERENCES users (id) ON DELETE CASCADE,
-    name VARCHAR(120) NOT NULL,
-    handle VARCHAR(80) NOT NULL UNIQUE,
-    primary_domain VARCHAR(255),
-    created_at TIMESTAMP NOT NULL DEFAULT now()
+create table if not exists role_permissions (
+  role_id int not null references roles(id) on delete cascade,
+  permission_id int not null references permissions(id) on delete cascade,
+  primary key (role_id, permission_id)
 );
 
-CREATE TABLE IF NOT EXISTS pages (
-  id SERIAL PRIMARY KEY,
-  store_id INTEGER NOT NULL REFERENCES stores(id) ON DELETE CASCADE,
-  name VARCHAR(120) NOT NULL,
-  type VARCHAR(50) NOT NULL DEFAULT 'static',
-  path VARCHAR(512) NOT NULL,
-  canonical_url VARCHAR(1024),
-  header JSONB NOT NULL DEFAULT '{}'::jsonb,
-  footer JSONB NOT NULL DEFAULT '{}'::jsonb,
-  content JSONB NOT NULL DEFAULT '{}'::jsonb,
-  seo JSONB NOT NULL DEFAULT '{}'::jsonb,
-  status VARCHAR(20) NOT NULL DEFAULT 'draft',
-  published_at TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT now(),
-  created_at TIMESTAMP NOT NULL DEFAULT now()
+create table if not exists user_roles (
+  user_id int not null references users(id) on delete cascade,
+  role_id int not null references roles(id) on delete cascade,
+  project_id int not null references stores(id) on delete cascade,
+  primary key (user_id, role_id, project_id)
 );
+
+create index if not exists idx_user_roles_user_project on user_roles(user_id, project_id);
+create index if not exists idx_user_roles_project on user_roles(project_id);

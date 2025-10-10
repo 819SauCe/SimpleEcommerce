@@ -4,6 +4,7 @@ import { validateEmail } from '../Utils/validateEmail';
 import { validatePassword } from '../Utils/validatePassword';
 import { COOKIE_NAME, cookieOpts } from '../Config/auth';
 import { signSession } from '../Config/jwt';
+import { generateCsrfToken } from '../Utils/generateCsrfToken';
 import { validateFirstName, validateLastName } from '../Utils/validateNames';
 import {
   searchUserByEmail,
@@ -12,62 +13,89 @@ import {
   searchRoleByName,
   createUserRole,
   searchUsers,
-  getRoleByUserId
+  userHasPermission
 } from '../Repositorys/UsersRepository';
 
-// Vamos colocar no futuro uma verificação para saber se o email pertence ao usuário
-// utilizaremos resend e token para enviar um email de verificação
-// além disso vamos integrar captcha para evitar bots
+function noStore(res: Response) {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+}
+
 export async function UserRegister(req: Request, res: Response) {
   try {
+    const tenantId = (req as any).tenantId as number | undefined;
+
     const email = validateEmail(req.body.email);
     const alreadyExists = await searchUserByEmail(email);
     if (alreadyExists) return res.status(409).json({ error: 'Email already exists' });
+
     const firstName = validateFirstName(req.body.firstName);
     const lastName = validateLastName(req.body.lastName);
     const password = validatePassword(req.body.password);
     const KeepMeLoggedIn = req.body.keepMeLoggedIn;
+
     await createUser({ email, firstName, lastName, password });
     const clientRole = await searchRoleByName('client');
     const user = await searchUserByEmail(email);
-    await createUserRole(user.id, clientRole.id, "1");
+    await createUserRole(user.id, clientRole.id, tenantId ?? 1);
 
+    const sessionToken = signSession({
+      sub: String(user.id),
+      email: user.email,
+      tenantId
+    });
 
     if (KeepMeLoggedIn) {
-      const sessionToken = signSession({ sub: String(user.id), email: user.email });
-      res.cookie(COOKIE_NAME, sessionToken, cookieOpts);
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOpts, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    } else {
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOpts, maxAge: 15 * 60 * 1000 });
     }
 
+    noStore(res);
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error: any) {
     console.log(error.message);
-    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
-    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
-    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
     return res.status(500).json({ error: error.message });
   }
 }
 
 export async function UserLogin(req: Request, res: Response) {
   try {
+    const tenantId = (req as any).tenantId as number | undefined;
     const email = validateEmail(req.body.email);
     const password = validatePassword(req.body.password);
     const KeepMeLoggedIn = req.body.keepMeLoggedIn;
+
     const user = await searchUserByEmail(email);
     if (!user) return res.status(404).json({ error: 'User not found' });
+
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) return res.status(401).json({ error: 'Invalid password' });
 
-    if (!KeepMeLoggedIn) {
-      const sessionToken = signSession({ sub: String(user.id), email: user.email });
-      res.cookie(COOKIE_NAME, sessionToken, cookieOpts);
+    const sessionToken = signSession({
+      sub: String(user.id),
+      email: user.email,
+      tenantId
+    });
+
+    const csrfToken = generateCsrfToken();
+    res.cookie('csrf', csrfToken, {
+      sameSite: 'strict',
+      secure: true,
+      path: '/',
+      maxAge: 2 * 60 * 60 * 1000,
+    });
+
+    if (KeepMeLoggedIn) {
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOpts, maxAge: 30 * 24 * 60 * 60 * 1000 });
+    } else {
+      res.cookie(COOKIE_NAME, sessionToken, { ...cookieOpts, maxAge: 15 * 60 * 1000 });
     }
 
+    noStore(res);
     return res.status(200).json({ message: 'Logged in successfully' });
   } catch (error: any) {
-    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
-    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
-    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
     return res.status(500).json({ error: error.message });
   }
 }
@@ -75,35 +103,31 @@ export async function UserLogin(req: Request, res: Response) {
 export async function UserMe(req: Request, res: Response) {
   try {
     const { id } = req.user!;
-    const user = await searchUserById(id);
+    const user = await searchUserById(Number(id));
     if (!user) return res.status(404).json({ error: 'User not found' });
+    noStore(res);
     return res.status(200).json({ user });
   } catch (error: any) {
-    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
-    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
-    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
     return res.status(500).json({ error: error.message });
   }
 }
 
 export function Logout(_req: Request, res: Response) {
-  res.clearCookie(COOKIE_NAME, { path: '/' });
+  res.clearCookie(COOKIE_NAME, { ...cookieOpts, maxAge: undefined });
+  noStore(res);
   return res.status(200).json({ message: 'Logged out' });
 }
 
 export async function getUsers(req: Request, res: Response) {
   try {
     const { id } = req.user!;
-    const isAdmin = await getRoleByUserId(id);
-    if (isAdmin.project_id === 1) {
-      const users = await searchUsers();
-      return res.status(200).json({ users });
-    }
-    return res.status(403).json({ error: 'Forbidden' });
+    const tenantId = Number((req as any).tenantId);
+    if (!Number.isFinite(tenantId)) return res.status(400).json({ error: 'missing tenantId' });
+    const ok = await userHasPermission(Number(id), tenantId, 'users.read');
+    if (!ok) return res.status(403).json({ error: 'Forbidden' });
+    const users = await searchUsers(tenantId);
+    return res.status(200).json({ users });
   } catch (error: any) {
-    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
-    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
-    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
     return res.status(500).json({ error: error.message });
   }
 }
@@ -111,18 +135,19 @@ export async function getUsers(req: Request, res: Response) {
 export async function genUser(req: Request, res: Response) {
   try {
     const { id } = req.user!;
-    const isAdmin = await getRoleByUserId(id);
-    if (isAdmin.project_id !== 1) return res.status(403).json({ error: 'Forbidden' });
+    const tenantId = (req as any).tenantId as number | undefined;
+    const ok = await userHasPermission(Number(id), Number(tenantId), 'users.create');
+    if (!ok) return res.status(403).json({ error: 'Forbidden' });
+
     const { firstName, lastName, email, password } = req.body;
     await createUser({ email, firstName, lastName, password });
     const clientRole = await searchRoleByName('client');
     const user = await searchUserByEmail(email);
-    await createUserRole(user.id, clientRole.id, "1");
+    await createUserRole(user.id, clientRole.id, tenantId ?? 1);
 
+    noStore(res);
+    return res.status(201).json({ message: 'User created successfully' });
   } catch (error: any) {
-    if (error.code === "23505") return res.status(409).json({ error: "Internal server error" });
-    if (error.code === "23503") return res.status(400).json({ error: "Internal server error" });
-    if (error.code === "22P02") return res.status(400).json({ error: "Internal server error" });
     return res.status(500).json({ error: error.message });
   }
 }

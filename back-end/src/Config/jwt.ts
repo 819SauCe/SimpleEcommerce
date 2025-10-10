@@ -1,7 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { JWT_SESSION_SECRET } from './auth';
 
-type SessionPayload = { sub: string; email: string; };
+export type SessionPayload = {
+  sub: string;
+  email: string;
+  tenantId?: number;
+};
 
 export function signSession(payload: SessionPayload) {
   return jwt.sign(payload, JWT_SESSION_SECRET, { expiresIn: '30d' });

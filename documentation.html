@@ -4,18 +4,23 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Guia rápido da API — SimpleEcommerce</title>
+  <title>SimpleEcommerce • Guia Rápido da API</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0b0c10;
-      --card: #111218;
-      --text: #e6e6e6;
-      --muted: #a8a8a8;
-      --acc: #82e0aa;
+      --bg: #0a0b0f;
+      --card: #0f1117;
+      --muted: #9aa4b2;
+      --text: #eef2f8;
+      --line: #1b2030;
+      --accent: #7cfead;
+      --acc-2: #93c5fd;
+      --radius: 14px;
     }
 
     * {
-      box-sizing: border-box;
+      box-sizing: border-box
     }
 
     html,
@@ -24,252 +29,365 @@
       padding: 0;
       background: var(--bg);
       color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial
     }
 
     a {
-      color: var(--acc);
-      text-decoration: none;
+      color: var(--acc-2);
+      text-decoration: none
     }
 
     .wrap {
-      max-width: 960px;
-      margin: 40px auto;
-      padding: 0 16px;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 28px 18px 64px
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin: 8px 0 20px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%);
+      box-shadow: 0 6px 40px rgba(124, 254, 173, .25)
     }
 
     h1 {
-      font-size: 28px;
-      margin: 0 0 16px;
-    }
-
-    h2 {
       font-size: 22px;
-      margin: 32px 0 12px;
+      margin: 0
     }
 
-    h3 {
-      font-size: 18px;
-      margin: 24px 0 8px;
+    .sub {
+      color: var(--muted);
+      font-size: 14px
     }
 
-    p,
-    li,
-    pre {
-      line-height: 1.55;
+    .panel {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1.2fr .8fr
     }
 
-    code,
-    pre {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    @media (max-width:920px) {
+      .panel {
+        grid-template-columns: 1fr
+      }
     }
 
     .card {
       background: var(--card);
-      border: 1px solid #1b1d29;
-      border-radius: 12px;
-      padding: 18px;
-      margin: 14px 0;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 18px
     }
 
-    .muted {
-      color: var(--muted);
+    h2 {
+      font-size: 16px;
+      margin: 0 0 8px
+    }
+
+    h3 {
+      font-size: 14px;
+      margin: 0 0 8px;
+      color: #cbd5e1
+    }
+
+    p {
+      margin: 6px 0 10px;
+      color: #cbd5e1
+    }
+
+    kbd {
+      font: 12px/1 Inter;
+      border: 1px solid #2a3142;
+      border-bottom-width: 2px;
+      border-radius: 8px;
+      background: #0b0d13;
+      padding: 3px 7px;
+      color: #cbd5e1
+    }
+
+    input,
+    select {
+      width: 100%;
+      background: #0b0d13;
+      border: 1px solid #1f2636;
+      border-radius: 10px;
+      color: var(--text);
+      padding: 10px 12px;
+      font: 14px Inter;
+      outline: none
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr
+    }
+
+    @media (max-width:640px) {
+      .row {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #111827;
+      border: 1px solid #273248;
+      color: #e5e7eb;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font: 600 13px Inter;
+      cursor: pointer
+    }
+
+    .btn.primary {
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      border: none;
+      color: #0a0b0f
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #0b0d13;
+      border: 1px solid #1f2536;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: 600 12px Inter;
+      color: #cbd5e1
+    }
+
+    .method {
+      font: 800 11px Inter;
+      letter-spacing: .08em;
+      text-transform: uppercase
+    }
+
+    .get {
+      color: #60a5fa
+    }
+
+    .post {
+      color: #34d399
+    }
+
+    .put {
+      color: #fbbf24
+    }
+
+    .del {
+      color: #f87171
+    }
+
+    pre {
+      margin: 10px 0 0;
+      background: #0b0d13;
+      border: 1px solid #1f2636;
+      border-radius: 12px;
+      padding: 14px;
+      overflow: auto
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      color: #e5e7eb
+    }
+
+    .block {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px
+    }
+
+    .copy {
+      cursor: pointer;
+      border: none;
+      background: #0b0d13;
+      border: 1px solid #1f2636;
+      color: #cbd5e1;
+      border-radius: 10px;
+      padding: 8px 10px;
+      font: 600 12px Inter
     }
 
     .grid {
       display: grid;
       gap: 14px;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))
     }
 
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: #1b1d29;
-      border: 1px solid #2a2d3a;
-      color: #cfd3dc;
+    hr {
+      border: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #1f2636, transparent);
+      margin: 16px 0
+    }
+
+    .ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #cbd5e1
+    }
+
+    .tip {
       font-size: 12px;
-    }
-
-    details {
-      background: #0f1016;
-      border: 1px solid #1b1d29;
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
-
-    details>summary {
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    pre {
-      background: #0f1016;
-      border: 1px solid #1b1d29;
-      border-radius: 10px;
-      padding: 12px;
-      overflow: auto;
-    }
-
-    .method {
-      font-weight: 700;
-      letter-spacing: .02em;
-    }
-
-    .get {
-      color: #7bdcff;
-    }
-
-    .post {
-      color: #a0e084;
-    }
-
-    .del {
-      color: #ff9ba3;
-    }
-
-    .put {
-      color: #ffd27b;
-    }
-
-    .kbd {
-      padding: 2px 6px;
-      border: 1px solid #444;
-      border-bottom-width: 2px;
-      border-radius: 6px;
-      background: #191a22;
+      color: var(--muted)
     }
   </style>
 </head>
 
 <body>
   <div class="wrap">
-    <h1>Guia rápido da API — SimpleEcommerce</h1>
-    <p class="muted">MVP para autenticação, criação de loja e gestão de páginas (header, footer, conteúdo e rotas).</p>
-
-    <div class="card">
-      <h2>Base URL</h2>
-      <pre><code>http://localhost:3000</code></pre>
-      <p class="muted">Troque para a URL do seu ambiente quando estiver em produção.</p>
+    <div class="header">
+      <div class="brand">
+        <div class="logo"></div>
+        <div>
+          <h1>SimpleEcommerce • Guia Rápido da API</h1>
+          <div class="sub">Autenticação, Lojas e Páginas com exemplos prontos</div>
+        </div>
+      </div>
+      <a class="badge" href="#">v1</a>
     </div>
 
+    <div class="panel">
+      <div class="card">
+        <h2>Ambiente</h2>
+        <div class="row">
+          <div>
+            <div class="tip">Base URL</div>
+            <input id="baseUrl" value="http://localhost:8080" />
+          </div>
+          <div>
+            <div class="tip">Store ID</div>
+            <input id="storeId" value="1" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div>
+            <div class="tip">One-Time Token</div>
+            <input id="bearer" placeholder="cole aqui o token do /token" />
+          </div>
+          <div>
+            <div class="tip">Email de teste</div>
+            <input id="emailDemo" value="ana@example.com" />
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Ajuda rápida</h2>
+        <p>1. Registre ou faça login para gravar o cookie de sessão.</p>
+        <p>2. Gere um token em <kbd>GET /token</kbd> e cole acima.</p>
+        <p>3. Crie a loja e gerencie páginas usando o token.</p>
+        <hr />
+        <p class="tip">Use os botões “Copiar” em cada bloco para colar no seu terminal.</p>
+      </div>
+    </div>
+
+    <div class="grid" style="margin-top:14px">
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method post">POST</span> /register</div>
+          <button class="copy" data-copy="curl" data-id="ex-register">Copiar</button>
+        </div>
+        <pre><code id="ex-register"></code></pre>
+      </div>
+
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method post">POST</span> /login</div>
+          <button class="copy" data-copy="curl" data-id="ex-login">Copiar</button>
+        </div>
+        <pre><code id="ex-login"></code></pre>
+      </div>
+
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method get">GET</span> /me</div>
+          <button class="copy" data-copy="curl" data-id="ex-me">Copiar</button>
+        </div>
+        <pre><code id="ex-me"></code></pre>
+      </div>
+
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method get">GET</span> /token</div>
+          <button class="copy" data-copy="curl" data-id="ex-token">Copiar</button>
+        </div>
+        <pre><code id="ex-token"></code></pre>
+      </div>
+    </div>
+
+    <h2 style="margin:18px 0 8px">Lojas</h2>
     <div class="grid">
       <div class="card">
-        <h3>Autenticação (Cookie)</h3>
-        <p>As rotas protegidas esperam um cookie de sessão definido por <code>/login</code> ou <code>/register</code>
-          com <code>keepMeLoggedIn=true</code>.</p>
+        <div class="block">
+          <div class="badge"><span class="method post">POST</span> /stores</div>
+          <button class="copy" data-copy="curl" data-id="ex-store-create">Copiar</button>
+        </div>
+        <pre><code id="ex-store-create"></code></pre>
       </div>
+
       <div class="card">
-        <h3>Bearer One-Time</h3>
-        <p>Algumas rotas exigem header <code>Authorization: Bearer &lt;token&gt;</code>, obtido via <code>/token</code>.
-        </p>
+        <div class="block">
+          <div class="badge"><span class="method get">GET</span> /stores/:storeId</div>
+          <button class="copy" data-copy="curl" data-id="ex-store-get">Copiar</button>
+        </div>
+        <pre><code id="ex-store-get"></code></pre>
       </div>
     </div>
 
-    <h2>Auth</h2>
-    <div class="card">
-      <div><span class="badge"><span class="method post">POST</span> /register</span></div>
-      <p>Registra usuário e (se <code>keepMeLoggedIn=true</code>) já define o cookie de sessão.</p>
-      <pre><code>POST /register
-Content-Type: application/json
+    <h2 style="margin:18px 0 8px">Páginas</h2>
+    <div class="grid">
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method post">POST</span> /stores/:storeId/pages</div>
+          <button class="copy" data-copy="curl" data-id="ex-page-upsert">Copiar</button>
+        </div>
+        <pre><code id="ex-page-upsert"></code></pre>
+      </div>
 
-{
-  "email": "ana@example.com",
-  "firstName": "Ana",
-  "lastName": "Silva",
-  "password": "SenhaF0rte!",
-  "keepMeLoggedIn": true
-}</code></pre>
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method get">GET</span> /stores/:storeId/pages</div>
+          <button class="copy" data-copy="curl" data-id="ex-page-list">Copiar</button>
+        </div>
+        <pre><code id="ex-page-list"></code></pre>
+      </div>
+
+      <div class="card">
+        <div class="block">
+          <div class="badge"><span class="method get">GET</span> /stores/:storeId/page?path=</div>
+          <button class="copy" data-copy="curl" data-id="ex-page-get">Copiar</button>
+        </div>
+        <pre><code id="ex-page-get"></code></pre>
+      </div>
     </div>
 
-    <div class="card">
-      <div><span class="badge"><span class="method post">POST</span> /login</span></div>
-      <p>Autentica e grava cookie de sessão quando <code>keepMeLoggedIn=true</code>.</p>
-      <pre><code>POST /login
-Content-Type: application/json
-
-{ "email":"ana@example.com", "password":"SenhaF0rte!", "keepMeLoggedIn": true }</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /me</span></div>
-      <p>Retorna o usuário autenticado (requer cookie).</p>
-      <pre><code>GET /me</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /token</span></div>
-      <p>Emite um token One-Time (requer cookie). Use no header <code>Authorization</code>.</p>
-      <pre><code>GET /token
-Authorization: (cookie já enviado pelo navegador)</code></pre>
-    </div>
-
-    <h2>Lojas</h2>
-    <div class="card">
-      <div><span class="badge"><span class="method post">POST</span> /stores</span></div>
-      <pre><code>POST /stores
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
-Content-Type: application/json
-
-{
-  "name": "Minha Loja",
-  "handle": "minha-loja",
-  "primary_domain": "www.minhaloja.com"
-}</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /stores/:storeId</span></div>
-      <pre><code>GET /stores/1
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
-    </div>
-
-    <h2>Páginas</h2>
-    <div class="card">
-      <div><span class="badge"><span class="method post">POST</span> /stores/:storeId/pages</span></div>
-      <pre><code>POST /stores/1/pages
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
-Content-Type: application/json
-
-{
-  "path": "/blog/post-1",
-  "name": "Post 1",
-  "type": "static",
-  "header": { "menu":[{"label":"Início","href":"/"}] },
-  "footer": { "text":"© 2025 Minha Loja" },
-  "content": { "title":"Primeiro post" },
-  "seo": { "title":"Post 1 • Minha Loja" },
-  "status": "published"
-}</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/pages</span></div>
-      <pre><code>GET /stores/1/pages?status=published
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/pages/... (middleware)</span></div>
-      <pre><code># /sobre
-GET /stores/1/pages/sobre
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;
-
-# /blog/post-1
-GET /stores/1/pages/blog/post-1
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
-    </div>
-
-    <div class="card">
-      <div><span class="badge"><span class="method get">GET</span> /stores/:storeId/page?path=...</span></div>
-      <pre><code>GET /stores/1/page?path=%2F
-Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
-    </div>
-
-    <h2>Códigos de status</h2>
-    <div class="card">
-      <ul>
+    <div class="card" style="margin-top:16px">
+      <h2>Códigos de status</h2>
+      <ul class="ul">
         <li><strong>200</strong> OK</li>
         <li><strong>201</strong> Created</li>
         <li><strong>400</strong> Requisição inválida</li>
@@ -281,6 +399,100 @@ Authorization: Bearer &lt;ONE_TIME_TOKEN&gt;</code></pre>
       </ul>
     </div>
   </div>
+
+  <script>
+    const byId = (id) => document.getElementById(id);
+    const base = () => byId('baseUrl').value.replace(/\/+$/, '');
+    const token = () => byId('bearer').value.trim();
+    const store = () => byId('storeId').value.trim() || '1';
+    const email = () => byId('emailDemo').value.trim() || 'ana@example.com';
+
+    function code(id, txt) { byId(id).textContent = txt.trim() }
+
+    function render() {
+      code('ex-register', `
+curl -i -X POST "${base()}/register" \\
+  -H "Content-Type: application/json" \\
+  --data-raw '{
+    "email": "${email()}",
+    "firstName": "Ana",
+    "lastName": "Silva",
+    "password": "SenhaF0rte!",
+    "keepMeLoggedIn": true
+  }'
+  `);
+
+      code('ex-login', `
+curl -i -X POST "${base()}/login" \\
+  -H "Content-Type: application/json" \\
+  --data-raw '{ "email":"${email()}", "password":"SenhaF0rte!", "keepMeLoggedIn": true }'
+  `);
+
+      code('ex-me', `
+curl -i "${base()}/me"
+  `);
+
+      code('ex-token', `
+curl -i "${base()}/token"
+  `);
+
+      code('ex-store-create', `
+curl -i -X POST "${base()}/stores" \\
+  -H "Authorization: Bearer ${token() || '<ONE_TIME_TOKEN>'}" \\
+  -H "Content-Type: application/json" \\
+  --data-raw '{
+    "name": "Minha Loja",
+    "handle": "minha-loja",
+    "primary_domain": "www.minhaloja.com"
+  }'
+  `);
+
+      code('ex-store-get', `
+curl -i "${base()}/stores/${store()}" \\
+  -H "Authorization: Bearer ${token() || '<ONE_TIME_TOKEN>'}"
+  `);
+
+      code('ex-page-upsert', `
+curl -i -X POST "${base()}/stores/${store()}/pages" \\
+  -H "Authorization: Bearer ${token() || '<ONE_TIME_TOKEN>'}" \\
+  -H "Content-Type: application/json" \\
+  --data-raw '{
+    "path": "/blog/post-1",
+    "name": "Post 1",
+    "type": "static",
+    "header": { "menu":[{"label":"Início","href":"/"}] },
+    "footer": { "text":"© 2025 Minha Loja" },
+    "content": { "title":"Primeiro post" },
+    "seo": { "title":"Post 1 • Minha Loja" },
+    "status": "published"
+  }'
+  `);
+
+      code('ex-page-list', `
+curl -i "${base()}/stores/${store()}/pages?status=published" \\
+  -H "Authorization: Bearer ${token() || '<ONE_TIME_TOKEN>'}"
+  `);
+
+      code('ex-page-get', `
+curl -i "${base()}/stores/${store()}/page?path=%2F" \\
+  -H "Authorization: Bearer ${token() || '<ONE_TIME_TOKEN>'}"
+  `);
+    }
+
+    ['baseUrl', 'bearer', 'storeId', 'emailDemo'].forEach(id => byId(id).addEventListener('input', render));
+    document.querySelectorAll('.copy').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const target = byId(btn.dataset.id);
+        const text = target.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+          const old = btn.textContent;
+          btn.textContent = 'Copiado';
+          setTimeout(() => btn.textContent = old, 900);
+        });
+      });
+    });
+    render();
+  </script>
 </body>
 
 </html>
