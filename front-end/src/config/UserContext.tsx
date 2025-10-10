@@ -13,7 +13,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null);
 
   useEffect(() => {
-    // seed from localStorage first (optional)
     const cached = {
       id: localStorage.getItem('userId') || '',
       firstName: localStorage.getItem('userFirstName') || '',
@@ -29,7 +28,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
-    // always try to refresh from API
     (async () => {
       try {
         const res = await fetch('http://localhost:8080/me', {
@@ -50,7 +48,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           localStorage.setItem('userLastName', fresh.lastName);
           localStorage.setItem('userImage', fresh.image);
         } else if (res.status === 401) {
-          // logged out
           setUser(null);
           localStorage.removeItem('userId');
           localStorage.removeItem('userFirstName');
