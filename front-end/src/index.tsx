@@ -9,6 +9,10 @@ import { Register } from './pages/register';
 import { UserProvider } from './config/UserContext';
 import { ProtectedRoute } from './config/ProtectedRoute';
 import { Footer } from './components/Footer';
+import { NotFound } from './pages/not-found';
+import { Pricing } from './pages/pricing';
+import { Status } from './pages/status';
+
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
@@ -18,9 +22,12 @@ root.render(
       <UserProvider>
         <Header />
         <Routes>
+          <Route path="*" element={<NotFound />} />
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/status" element={<Status />} />
         </Routes>
         <Footer />
       </UserProvider>

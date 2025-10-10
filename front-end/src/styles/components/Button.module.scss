@@ -1,99 +1,53 @@
 @use '../variables' as *;
 
 .default_button {
-  width: 100%;
-  background: linear-gradient(180deg, $background-color-primary, $background-color-secondary);
-  color: $font-color-primary;
-  border: 1px solid $border-color;
-  padding: 0.75rem 1.25rem;
-  cursor: pointer;
-  font-size: 1rem;
-  border-radius: $border-radius-md;
-  font-weight: 500;
-  box-shadow: $shadow-sm;
-  transition: $transition-base;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: .5rem;
+  padding: .6rem 1rem;
+  border-radius: $border-radius-md;
+  border: 1px solid $border-color;
+  background: $background-color-primary;
+  color: $font-color-primary;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition: $transition-base;
+  text-decoration: none;
   user-select: none;
 
-  svg {
-    width: 1.2em;
-    height: 1.2em;
-    transition: $transition-fast;
-  }
-
   &:hover {
-    background: $color-primary;
-    color: $font-color-inverse;
-    box-shadow: $shadow-md;
-    transform: translateY(-1px);
-
-    svg {
-      transform: scale(1.1);
-    }
-  }
-
-  &:active {
-    background: $color-primary-dark;
-    box-shadow: $shadow-sm;
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $color-primary-light;
-    outline-offset: 3px;
+    background: $background-color-secondary;
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: .6;
     cursor: not-allowed;
-    background: $background-color-secondary;
-    color: $font-color-muted;
-    box-shadow: none;
-    transform: none;
   }
+}
 
-  &--primary {
-    background: $color-primary;
-    color: $font-color-inverse;
-    border-color: transparent;
+.default_button--primary {
+  border-color: transparent;
+  background: $color-primary;
+  color: $font-color-inverse;
 
-    &:hover {
-      background: $color-primary-light;
-    }
+  &:hover { background: $color-primary-light; }
+  &:active { background: $color-primary-dark; }
+}
 
-    &:active {
-      background: $color-primary-dark;
-    }
-  }
+.default_button--secondary {
+  background: $background-color-primary;
+  color: $font-color-primary;
+  border-color: $border-color;
 
-  &--secondary {
-    background: $background-color-primary;
-    color: $font-color-primary;
-    border-color: $border-color;
+  &:hover { background: $background-color-secondary; }
+}
 
-    &:hover {
-      background: $background-color-secondary;
-    }
+.default_button--ghost {
+  background: transparent;
+  color: $font-color-primary;
+  border-color: transparent;
 
-    &:active {
-      background: $background-color-tertiary;
-    }
-  }
-
-  &--danger {
-    background: $error-color;
-    color: $font-color-inverse;
-    border: none;
-
-    &:hover {
-      background: lighten($error-color, 5%);
-    }
-
-    &:active {
-      background: darken($error-color, 5%);
-    }
-  }
+  &:hover { background: $background-color-secondary; }
 }
