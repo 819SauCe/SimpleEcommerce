@@ -1,18 +1,19 @@
 import React from "react";
 
-type InputProps = {
+type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  type?: string;
-  disabled?: boolean;
-  className?: string;
 };
 
-const Input: React.FC<InputProps> = ({ value, onChange, placeholder = '', type = 'text', disabled = false, className = '' }) => {
+const Input: React.FC<InputProps> = ({value, onChange, className = '', ...rest}) => {
   return (
-    <input value={value} onChange={onChange} placeholder={placeholder} type={type} disabled={disabled} className={`${className}`} />
+    <input
+      value={value}
+      onChange={onChange}
+      className={className}
+      {...rest}
+    />
   );
-}
+};
 
 export default Input;
