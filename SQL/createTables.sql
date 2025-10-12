@@ -5,6 +5,8 @@ create table if not exists users (
   last_name text not null,
   password text not null,
   cpf text,
+  cnpj text,
+  phone text,
   user_image text,
   created_at timestamp default now()
 );

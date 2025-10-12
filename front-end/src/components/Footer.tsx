@@ -11,7 +11,7 @@ export function Footer() {
           <div className={styles.brand}>
             <div className={styles.logoRow}>
               <div className={styles.logo}>A</div>
-              <div className={styles.name}>Admin</div>
+              <div className={styles.name}>Arkon</div>
             </div>
             <p className={styles.tagline}>SaaS para criar e gerenciar e-commerces com simplicidade.</p>
           </div>

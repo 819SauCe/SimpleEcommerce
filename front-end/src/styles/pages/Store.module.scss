@@ -1,0 +1,14 @@
+@use '../variables' as *;
+
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100svh;
+  padding: 2rem;
+  background:
+    radial-gradient(60rem 60rem at 10% -10%, rgba(255, 62, 0, 0.06), transparent 40%),
+    radial-gradient(40rem 40rem at 100% 0%, rgba(0, 0, 0, 0.06), transparent 35%),
+    $background-color;
+  color: $font-color-primary;
+}

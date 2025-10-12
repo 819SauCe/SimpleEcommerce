@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 type User = {
   id: string;
@@ -11,14 +11,19 @@ const UserContext = createContext<User>(null);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User>(null);
+  const ran = useRef(false);
 
   useEffect(() => {
+    if (ran.current) return;
+    ran.current = true;
+
     const cached = {
       id: localStorage.getItem('userId') || '',
       firstName: localStorage.getItem('userFirstName') || '',
       lastName: localStorage.getItem('userLastName') || '',
       image: localStorage.getItem('userImage') || '',
     };
+
     if (cached.id) {
       setUser({
         id: cached.id,
@@ -34,6 +39,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           method: 'GET',
           credentials: 'include',
         });
+
         if (res.ok) {
           const data = await res.json();
           const fresh: NonNullable<User> = {
@@ -42,11 +48,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             lastName: data.user.last_name,
             image: data.user.user_image,
           };
-          setUser(fresh);
-          localStorage.setItem('userId', fresh.id);
-          localStorage.setItem('userFirstName', fresh.firstName);
-          localStorage.setItem('userLastName', fresh.lastName);
-          localStorage.setItem('userImage', fresh.image);
+
+          setUser(prev => {
+            if (
+              prev &&
+              prev.id === fresh.id &&
+              prev.firstName === fresh.firstName &&
+              prev.lastName === fresh.lastName &&
+              prev.image === fresh.image
+            ) return prev;
+
+            localStorage.setItem('userId', fresh.id);
+            localStorage.setItem('userFirstName', fresh.firstName);
+            localStorage.setItem('userLastName', fresh.lastName);
+            localStorage.setItem('userImage', fresh.image);
+            return fresh;
+          });
         } else if (res.status === 401) {
           setUser(null);
           localStorage.removeItem('userId');

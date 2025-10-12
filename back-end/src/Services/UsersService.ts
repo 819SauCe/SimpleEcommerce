@@ -6,6 +6,9 @@ import { COOKIE_NAME, cookieOpts } from '../Config/auth';
 import { signSession } from '../Config/jwt';
 import { generateCsrfToken } from '../Utils/generateCsrfToken';
 import { validateFirstName, validateLastName } from '../Utils/validateNames';
+import { validateCNPJ, validateCPF, } from '../Utils/validateCpfAndCpnj';
+import { validateImageUrl } from '../Utils/validateImage';
+import { validateBRPhone } from '../Utils/validateTellPhone';
 import {
   searchUserByEmail,
   searchUserById,
@@ -13,7 +16,8 @@ import {
   searchRoleByName,
   createUserRole,
   searchUsers,
-  userHasPermission
+  userHasPermission,
+  updateUserById,
 } from '../Repositorys/UsersRepository';
 
 function noStore(res: Response) {
@@ -147,6 +151,33 @@ export async function genUser(req: Request, res: Response) {
 
     noStore(res);
     return res.status(201).json({ message: 'User created successfully' });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export async function updateDataUser(req: Request, res: Response) {
+  try {
+    const rawId = req.user?.id;
+    const userId = Number(rawId);
+    if (!Number.isInteger(userId)) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { firstName, lastName, cpf, cnpj, phone, userImage } = req.body ?? {};
+    const updates: any = {};
+    if (firstName !== undefined && firstName !== null && firstName !== '') updates.first_name = validateFirstName(firstName);
+    if (lastName !== undefined && lastName !== null && lastName !== '') updates.last_name = validateLastName(lastName);
+    if (cpf !== undefined && cpf !== null && cpf !== '') updates.cpf = validateCPF(req.body.cpf);
+    if (cnpj !== undefined && cnpj !== null && cnpj !== '' ) updates.cnpj = validateCNPJ(req.body.cnpj);
+    if (phone !== undefined && phone !== null && phone !== '') updates.phone = validateBRPhone(phone);
+    if (userImage !== undefined && userImage !== null && userImage !== '') updates.user_image = validateImageUrl(userImage);
+
+    if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Nenhum campo válido para atualizar' });
+
+    const updated = await updateUserById(userId, updates);
+    if (!updated) return res.status(404).json({ error: 'User not found' });
+
+    noStore(res);
+    return res.status(200).json({ message: 'Perfil atualizado com sucesso', user: updated });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

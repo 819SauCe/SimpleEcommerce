@@ -97,3 +97,29 @@ export async function searchUsers(projectId: number) {
 
   return usersWithRoles;
 }
+
+export async function updateUserById(userId: number, updates: Record<string, any>) {
+  const keys = Object.keys(updates);
+  if (keys.length === 0) return null;
+
+  const setFragments = keys.map((k, i) => `${k} = $${i + 1}`);
+  const values = keys.map((k) => updates[k]);
+
+  const query = `
+    UPDATE users
+       SET ${setFragments.join(', ')}
+     WHERE id = $${keys.length + 1}
+     RETURNING id,
+               email,
+               first_name AS "firstName",
+               last_name AS "lastName",
+               cpf,
+               cnpj,
+               phone,
+               user_image AS "userImage",
+               created_at AS "createdAt";
+  `;
+
+  const { rows } = await pool.query(query, [...values, userId]);
+  return rows[0] ?? null;
+}

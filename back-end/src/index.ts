@@ -1,9 +1,9 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import helmet from 'helmet';
 import type { RequestHandler } from 'express';
 import { validCors } from './Config/setup';
-import { csrfGuard } from './middlewares/csrfGuard';
 import { setup } from './Config/setup';
 import { UserLogin, Logout, UserMe, UserRegister, getUsers } from './Services/UsersService';
 import { requireTenantId } from './middlewares/requireTenantId';
@@ -14,6 +14,7 @@ import { authLimiter, globalLimiter } from './Config/limiter';
 import { createStore, getStoreById } from './Services/StoresService';
 import { upsertPageByPath, listPages, getPageByPath } from './Services/PagesService';
 import { resolveTenant } from './middlewares/tenant';
+import { updateDataUser } from './Services/UsersService';
 
 const app = express();
 const corsOptions = { origin: setup.cors, credentials: true };
@@ -28,12 +29,14 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(globalLimiter);
 app.use(resolveTenant);
+app.use(helmet());
 
 app.post('/login', authLimiter, UserLogin);
 app.post('/register', authLimiter, UserRegister);
 app.get('/me', requireSession, UserMe);
-app.post('/logout', authLimiter, requireSession, csrfGuard, Logout);
+app.post('/logout', authLimiter, requireSession, Logout);
 app.post('/token', requireSession, IssueOneTimeToken);
+app.patch('/me', requireSession, requireOneTimeBearer, updateDataUser);
 
 app.get('/users', requireSession, requireOneTimeBearer, requireTenantId, getUsers);
 
