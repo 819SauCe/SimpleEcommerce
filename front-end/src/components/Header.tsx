@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { useState, useMemo, useRef, useEffect } from 'react';
+import { NavLink, Link, useNavigate } from 'react-router-dom';
 import styles from '../styles/components/Header.module.scss';
 import buttonStyles from '../styles/components/Button.module.scss';
 import { useUser } from '../config/UserContext';
@@ -8,6 +8,8 @@ export function Header() {
   const user = useUser();
   const [open, setOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const userMenuRef = useRef<HTMLDivElement | null>(null);
+  const navigate = useNavigate();
 
   const initials = useMemo(() => {
     if (!user) return 'A';
@@ -28,13 +30,33 @@ export function Header() {
         credentials: 'include',
         headers: { 'x-csrf': csrf ?? '' }
       });
-    } catch { }
+    } catch {}
     localStorage.removeItem('userId');
     localStorage.removeItem('userFirstName');
     localStorage.removeItem('userLastName');
     localStorage.removeItem('userImage');
-    window.location.href = '/login';
+    navigate('/login', { replace: true });
   }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') {
+        setUserMenuOpen(false);
+        setOpen(false);
+      }
+    }
+    function onClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    document.addEventListener('mousedown', onClickOutside);
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      document.removeEventListener('mousedown', onClickOutside);
+    };
+  }, []);
 
   return (
     <header className={styles.header}>
@@ -58,21 +80,32 @@ export function Header() {
               <Link to="/register" className={`${buttonStyles.default_button} ${buttonStyles['default_button--primary']}`}>Register</Link>
             </>
           ) : (
-            <div className={styles.user_menu} onMouseEnter={() => setUserMenuOpen(true)} onMouseLeave={() => setUserMenuOpen(false)} onFocus={() => setUserMenuOpen(true)} onBlur={() => setUserMenuOpen(false)}>
-              {user.image ? (
-                <button className={styles.avatar_btn} aria-haspopup="menu" aria-expanded={userMenuOpen}>
+            <div className={styles.user_menu} ref={userMenuRef}>
+              <button className={styles.avatar_btn} aria-haspopup="menu" aria-expanded={userMenuOpen} onClick={() => setUserMenuOpen(v => !v)}>
+                {user.image ? (
                   <img className={styles.avatar_img} src={user.image} alt={`${user.firstName} ${user.lastName}`} draggable={false} />
-                </button>
-              ) : (
-                <button className={`${styles.avatar_btn} ${styles.avatar_fallback}`} aria-haspopup="menu" aria-expanded={userMenuOpen} onCopy={(e) => e.preventDefault()} draggable={false}>
-                  <span aria-hidden="true">{initials}</span>
-                </button>
-              )}
+                ) : (
+                  <span className={`${styles.avatar_fallback}`} aria-hidden="true">{initials}</span>
+                )}
+              </button>
+              <span className={styles.avatar_name}>{`${user.firstName}`}</span>
 
-              <div className={styles.user_menu_dropdown} role="menu" aria-label="User menu">
+              <div className={`${styles.user_menu_dropdown} ${userMenuOpen ? styles.open : ''}`} role="menu" aria-label="User menu">
+                <div className={styles.menu_section_label}>Conta</div>
                 <Link to={`/${user?.id}/user`} role="menuitem" className={styles.user_menu_item}>Perfil</Link>
                 <Link to="/settings" role="menuitem" className={styles.user_menu_item}>Configurações</Link>
-                <button role="menuitem" onClick={handleLogout} className={styles.user_menu_item_btn}>Logout</button>
+
+                <div className={styles.menu_divider} />
+
+                <div className={styles.menu_section_label}>Loja</div>
+                <Link to="/store" role="menuitem" className={styles.user_menu_item}>Minha Loja</Link>
+                <Link to="/products" role="menuitem" className={styles.user_menu_item}>Meus Produtos</Link>
+
+                <div className={styles.menu_divider} />
+
+                <button role="menuitem" onClick={handleLogout} className={`${styles.user_menu_item_btn} ${styles.danger}`}>
+                  Logout
+                </button>
               </div>
             </div>
           )}
@@ -86,26 +119,33 @@ export function Header() {
         </button>
       </div>
 
-      {open && (
-        <div id="drawer" className={styles.drawer}>
+      <div className={`${styles.drawer_backdrop} ${open ? styles.open : ''}`} onClick={() => setOpen(false)} aria-hidden />
+      <aside id="drawer" className={`${styles.drawer} ${open ? styles.open : ''}`} aria-hidden={!open}>
+        <div className={styles.drawer_header}>
+          <span>Menu</span>
+          <button className={styles.drawer_close} onClick={() => setOpen(false)} aria-label="Fechar menu">×</button>
+        </div>
+        <nav className={styles.drawer_nav}>
           <NavLink to="/" end onClick={() => setOpen(false)}>Home</NavLink>
           <NavLink to="/store" onClick={() => setOpen(false)}>My Store</NavLink>
           <NavLink to="/products" onClick={() => setOpen(false)}>My Products</NavLink>
           <NavLink to="/api" onClick={() => setOpen(false)}>API</NavLink>
           {!user ? (
-            <>
+            <div className={styles.drawer_ctas}>
               <Link to="/login" onClick={() => setOpen(false)} className={`${buttonStyles.default_button} ${buttonStyles['default_button--secondary']}`}>
                 Login
               </Link>
               <Link to="/register" onClick={() => setOpen(false)} className={`${buttonStyles.default_button} ${buttonStyles['default_button--primary']}`}>
                 Register
               </Link>
-            </>
+            </div>
           ) : (
-            <button onClick={handleLogout} className={`${buttonStyles.default_button} ${buttonStyles['default_button--secondary;']}`}>Logout</button>
+            <button onClick={() => { setOpen(false); handleLogout(); }} className={`${buttonStyles.default_button} ${buttonStyles['default_button--secondary']}`}>
+              Logout
+            </button>
           )}
-        </div>
-      )}
+        </nav>
+      </aside>
     </header>
   );
 }
