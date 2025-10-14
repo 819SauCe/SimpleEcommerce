@@ -11,7 +11,7 @@ import { IssueOneTimeToken } from './Controllers/tokenController';
 import { requireSession } from './middlewares/requireSession';
 import { requireOneTimeBearer } from './middlewares/oneTimeBearer';
 import { authLimiter, globalLimiter } from './Config/limiter';
-import { createStore, getStoreById } from './Services/StoresService';
+import { createProject, getProjectById } from './Services/ProjectsService';
 import { upsertPageByPath, listPages, getPageByPath } from './Services/PagesService';
 import { resolveTenant } from './middlewares/tenant';
 import { updateDataUser } from './Services/UsersService';
@@ -40,12 +40,12 @@ app.patch('/me', requireSession, requireOneTimeBearer, updateDataUser);
 
 app.get('/users', requireSession, requireOneTimeBearer, requireTenantId, getUsers);
 
-app.post('/stores', requireSession, requireOneTimeBearer, createStore);
-app.get('/stores/:storeId', requireSession, requireOneTimeBearer, getStoreById);
+app.post('/projects', requireSession, requireOneTimeBearer, createProject);
+app.get('/projects/:projectId', requireSession, requireOneTimeBearer, getProjectById);
 
-app.post('/stores/:storeId/pages', requireSession, requireOneTimeBearer, useStoreParamAsTenant, upsertPageByPath);
-app.get('/stores/:storeId/pages', requireSession, requireOneTimeBearer, useStoreParamAsTenant, listPages);
-app.get('/stores/:storeId/page', requireSession, requireOneTimeBearer, useStoreParamAsTenant, getPageByPath);
+app.post('/projects/:projectsId/pages', requireSession, requireOneTimeBearer, useStoreParamAsTenant, upsertPageByPath);
+app.get('/projects/:projectsId/pages', requireSession, requireOneTimeBearer, useStoreParamAsTenant, listPages);
+app.get('/projects/:projectsId/page', requireSession, requireOneTimeBearer, useStoreParamAsTenant, getPageByPath);
 
 validCors();
 app.listen(setup.port, () => {

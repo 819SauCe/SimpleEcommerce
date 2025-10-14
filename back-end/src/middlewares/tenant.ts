@@ -1,5 +1,5 @@
 import type { RequestHandler } from 'express';
-import { findStoreByHost } from '../Repositorys/StoresRepository';
+import { findStoreByHost } from '../Repositorys/ProjectsRepository';
 
 export const resolveTenant: RequestHandler = async (req, _res, next) => {
   const headerTenant = req.header('X-Store-Id');

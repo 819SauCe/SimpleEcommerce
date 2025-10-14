@@ -1,0 +1,159 @@
+@use '../variables' as *;
+
+.wrapper {
+  min-height: 100vh;
+  background: $background-color;
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.card {
+  width: 100%;
+  max-width: 560px;
+  background: $background-color-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-lg;
+  box-shadow: $shadow-lg;
+  padding: 28px;
+}
+
+.title {
+  margin: 0 0 6px;
+  font-size: 28px;
+  line-height: 1.2;
+  color: $font-color-primary;
+}
+
+.subtitle {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: $font-color-secondary;
+}
+
+.form {
+  display: grid;
+  gap: 16px;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  color: $font-color-secondary;
+}
+
+.input {
+  width: 100%;
+  background: $background-color-primary;
+  border: 1px solid $border-color;
+  border-radius: $border-radius-md;
+  padding: 12px 14px;
+  outline: none;
+  transition: $transition-base;
+  color: $font-color-primary;
+  box-shadow: $shadow-sm;
+}
+
+.input:focus {
+  border-color: $color-primary;
+  box-shadow: 0 0 0 3px rgba(255, 62, 0, 0.15);
+}
+
+.inputGroup {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 14px;
+  color: $font-color-muted;
+  pointer-events: none;
+}
+
+.inputGroup .input {
+  padding-left: 34px;
+}
+
+.hint {
+  font-size: 12px;
+  color: $font-color-muted;
+  min-height: 18px;
+}
+
+.ok {
+  color: $success-color;
+}
+
+.err {
+  color: $error-color;
+}
+
+.alertError {
+  background: mix($error-color, $background-color-primary, 12%);
+  color: $error-color;
+  border: 1px solid mix($error-color, $border-color, 40%);
+  border-radius: $border-radius-sm;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.alertSuccess {
+  background: mix($success-color, $background-color-primary, 12%);
+  color: $success-color;
+  border: 1px solid mix($success-color, $border-color, 40%);
+  border-radius: $border-radius-sm;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.submit {
+  appearance: none;
+  border: none;
+  border-radius: $border-radius-md;
+  background: $color-primary;
+  color: $font-color-inverse;
+  padding: 12px 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  box-shadow: $shadow-md;
+  transition: $transition-fast;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submit:not(:disabled):hover {
+  transform: translateY(-1px);
+  background: $color-primary-dark;
+  box-shadow: $shadow-lg;
+}
+
+[data-theme="dark"] .card {
+  background: $background-color-primary;
+  border-color: $border-color;
+}
+
+[data-theme="dark"] .input {
+  background: $background-color-secondary;
+  border-color: $border-color;
+  color: $font-color-primary;
+}
+
+[data-theme="dark"] .input:focus {
+  border-color: $color-primary-light;
+  box-shadow: 0 0 0 3px rgba(255, 62, 0, 0.2);
+}
+
+[data-theme="dark"] .hint {
+  color: $font-color-secondary;
+}

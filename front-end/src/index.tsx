@@ -11,26 +11,26 @@ import { Footer } from './components/Footer';
 import { NotFound } from './pages/not-found';
 import { Pricing } from './pages/pricing';
 import { Status } from './pages/status';
-import { Store } from './pages/store';
+import CreateProjectPage from './pages/CreateProjectPage';
 import { Profile } from './pages/profile';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-    <BrowserRouter>
-      <UserProvider>
-        <Header />
-        <Routes>
-          <Route path="/404" element={<NotFound />} />
-          <Route path="*" element={<NotFound />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/status" element={<Status />} />
-          <Route path="/store" element={<Store />} />
-          <Route path="/:slug/user" element={<Profile />} />
-        </Routes>
-        <Footer />
-      </UserProvider>
-    </BrowserRouter>
+  <BrowserRouter>
+    <UserProvider>
+      <Header />
+      <Routes>
+        <Route path="/404" element={<NotFound />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/pricing" element={<Pricing />} />
+        <Route path="/status" element={<Status />} />
+        <Route path="/store" element={<ProtectedRoute><CreateProjectPage /></ProtectedRoute>} />
+        <Route path="/:slug/user" element={<Profile />} />
+      </Routes>
+      <Footer />
+    </UserProvider>
+  </BrowserRouter>
 );

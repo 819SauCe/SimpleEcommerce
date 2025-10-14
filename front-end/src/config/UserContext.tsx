@@ -7,10 +7,10 @@ type User = {
   image: string;
 } | null;
 
-const UserContext = createContext<User>(null);
+const UserContext = createContext<User | undefined>(undefined);
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const ran = useRef(false);
 
   useEffect(() => {
@@ -42,11 +42,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         if (res.ok) {
           const data = await res.json();
-          const fresh: NonNullable<User> = {
-            id: data.user.id,
-            firstName: data.user.first_name,
-            lastName: data.user.last_name,
-            image: data.user.user_image,
+          const fresh = {
+            id: String(data.user.id),
+            firstName: String(data.user.first_name),
+            lastName: String(data.user.last_name),
+            image: String(data.user.user_image || ''),
           };
 
           setUser(prev => {
@@ -70,9 +70,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           localStorage.removeItem('userFirstName');
           localStorage.removeItem('userLastName');
           localStorage.removeItem('userImage');
+        } else {
+          if (user === undefined) setUser(null);
         }
-      } catch (e) {
-        console.error('Error fetching user data:', e);
+      } catch {
+        if (user === undefined) setUser(null);
       }
     })();
   }, []);
