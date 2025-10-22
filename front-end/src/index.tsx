@@ -3,17 +3,17 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
-import { Login } from './pages/Login';
-import { Register } from './pages/Register';
+import { Login } from './pages/login';
+import { Register } from './pages/register';
 import { UserProvider } from './config/UserContext';
 import { ProtectedRoute } from './config/ProtectedRoute';
 import { Footer } from './components/Footer';
-import { NotFound } from './pages/Not-found';
-import { Pricing } from './pages/Pricing';
-import { Status } from './pages/Status';
-import CreateProjectPage from './pages/CreateProjectPage';
-import { Profile } from './pages/Profile';
-import { HomePage } from './pages/HomePage';
+import { NotFound } from './pages/not-found';
+import { Pricing } from './pages/pricing';
+import { Status } from './pages/status';
+import CreateProjectPage from './pages/createProjectPage';
+import { Profile } from './pages/profile';
+import { HomePage } from './pages/homePage';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
