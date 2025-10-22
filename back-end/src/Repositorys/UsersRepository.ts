@@ -8,7 +8,7 @@ export async function searchUserByEmail(email: string){
   return result.rows[0];
 }
 
-export async function searchUserById(id: number){
+export async function searchUserById(id: string){
   const query = 'SELECT id, first_name, last_name, user_image FROM users WHERE id = $1';
   const values = [id];
   const result = await pool.query(query, values);
@@ -23,7 +23,7 @@ export async function createUser({ email, firstName, lastName, password }: { ema
   return result.rows[0];
 }
 
-export async function createUserRole(userId: number, roleId: number, projectId: number){
+export async function createUserRole(userId: number, roleId: number, projectId: string){
   const query = 'INSERT INTO user_roles (user_id, role_id, project_id) VALUES ($1, $2, $3) RETURNING *';
   const values = [userId, roleId, projectId];
   const result = await pool.query(query, values);

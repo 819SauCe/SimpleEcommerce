@@ -28,10 +28,10 @@ function noStore(res: Response) {
 
 export async function UserRegister(req: Request, res: Response) {
   try {
-    const tenantId = (req as any).tenantId as number | undefined;
-
+    const tenantId = (req as any).tenantId as string | undefined;
     const email = validateEmail(req.body.email);
     const alreadyExists = await searchUserByEmail(email);
+
     if (alreadyExists) return res.status(409).json({ error: 'Email already exists' });
 
     const firstName = validateFirstName(req.body.firstName);
@@ -40,14 +40,16 @@ export async function UserRegister(req: Request, res: Response) {
     const KeepMeLoggedIn = req.body.keepMeLoggedIn;
 
     await createUser({ email, firstName, lastName, password });
+
     const clientRole = await searchRoleByName('client');
     const user = await searchUserByEmail(email);
-    await createUserRole(user.id, clientRole.id, tenantId ?? 1);
+
+    await createUserRole(user.id, clientRole.id, tenantId ?? "00000000-0000-0000-0000-000000000001");
 
     const sessionToken = signSession({
       sub: String(user.id),
       email: user.email,
-      tenantId
+      tenantId: tenantId ? Number(tenantId) : undefined
     });
 
     if (KeepMeLoggedIn) {
@@ -107,7 +109,7 @@ export async function UserLogin(req: Request, res: Response) {
 export async function UserMe(req: Request, res: Response) {
   try {
     const { id } = req.user!;
-    const user = await searchUserById(Number(id));
+    const user = await searchUserById(String(id));
     if (!user) return res.status(404).json({ error: 'User not found' });
     noStore(res);
     return res.status(200).json({ user });
@@ -139,7 +141,7 @@ export async function getUsers(req: Request, res: Response) {
 export async function genUser(req: Request, res: Response) {
   try {
     const { id } = req.user!;
-    const tenantId = (req as any).tenantId as number | undefined;
+    const tenantId = (req as any).tenantId as string | undefined;
     const ok = await userHasPermission(Number(id), Number(tenantId), 'users.create');
     if (!ok) return res.status(403).json({ error: 'Forbidden' });
 
@@ -147,7 +149,7 @@ export async function genUser(req: Request, res: Response) {
     await createUser({ email, firstName, lastName, password });
     const clientRole = await searchRoleByName('client');
     const user = await searchUserByEmail(email);
-    await createUserRole(user.id, clientRole.id, tenantId ?? 1);
+    await createUserRole(user.id, clientRole.id, tenantId ?? "00000000-0000-0000-0000-000000000001");
 
     noStore(res);
     return res.status(201).json({ message: 'User created successfully' });
