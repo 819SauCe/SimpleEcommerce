@@ -6,7 +6,6 @@ import { useUser } from '../config/UserContext';
 import styles from '../styles/pages/Profile.module.scss';
 import buttonStyles from '../styles/components/Button.module.scss';
 import inputStyles from '../styles/components/Input.module.scss';
-import { NotFound } from './not-found';
 
 type PublicUser = {
   id: string;
@@ -16,10 +15,10 @@ type PublicUser = {
 };
 
 type PersonType = 'INDIVIDUAL' | 'COMPANY';
-type DocumentType = 'CPF' | 'CNPJ' | 'NATIONAL_ID' | 'PASSPORT' | 'SSN' | 'TIN' | 'VAT';
+type DocumentType = 'CPF' | 'CNPJ';
 
-function getAutoAvatarUrl(seed: string, bg = 'f5f5f5', text = '242426') {
-  const s = encodeURIComponent(seed || 'User');
+function getAutoAvatarUrl(seed: string, bg = '260900', text = 'ffffff') {
+  const s = encodeURIComponent(seed || 'U');
   return `https://api.dicebear.com/7.x/initials/svg?seed=${s}&backgroundColor=${bg}&textColor=${text}`;
 }
 
@@ -56,11 +55,17 @@ export function Profile() {
   const isOwner = useMemo(() => !!user && String(slug ?? '') === String(user.id ?? ''), [slug, user]);
   const displayName = (firstName || lastName) ? `${firstName} ${lastName}`.trim() : (businessName || `@${slug}`);
 
+  const initials = useMemo(() => {
+    const f = firstName?.[0] ?? '';
+    const l = lastName?.[0] ?? '';
+    const base = (f + l) || (slug?.[0] ?? '') || 'U';
+    return base.toUpperCase();
+  }, [firstName, lastName, slug]);
+
   const avatarUrl = useMemo(() => {
     if (userImage) return userImage;
-    const seed = displayName || slug || 'User';
-    return getAutoAvatarUrl(seed);
-  }, [userImage, displayName, slug]);
+    return getAutoAvatarUrl(initials);
+  }, [userImage, initials]);
 
   useEffect(() => {
     if (!user || !isOwner) return;
@@ -80,7 +85,7 @@ export function Profile() {
         setLoadingUser(true);
         const res = await fetch(`http://localhost:8080/users/${encodeURIComponent(slug)}`, {
           method: 'GET',
-          headers: { 'Accept': 'application/json' },
+          headers: { Accept: 'application/json' },
           credentials: 'include',
         });
         if (cancelled) return;
@@ -173,7 +178,6 @@ export function Profile() {
         setStatus('error');
         return;
       }
-
       const identity: Record<string, unknown> = {
         firstName,
         lastName,
@@ -188,7 +192,6 @@ export function Profile() {
         cnpj,
         image: userImage,
       };
-
       const address: Record<string, unknown> = {
         addressLine1,
         addressNumber,
@@ -199,7 +202,6 @@ export function Profile() {
         postalCode,
         country,
       };
-
       const payload: Record<string, unknown> = {
         identity,
         address,
@@ -221,14 +223,12 @@ export function Profile() {
         },
         profileCompletion: completionPercent,
       };
-
       const res = await fetch('http://localhost:8080/me', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         credentials: 'include',
         body: JSON.stringify(payload),
       });
-
       const raw = await res.text();
       let data: any;
       try { data = JSON.parse(raw); } catch { data = { raw }; }
@@ -281,7 +281,7 @@ export function Profile() {
               alt="Avatar"
               onError={(e) => {
                 if (!avatarFallbackApplied) {
-                  (e.currentTarget as HTMLImageElement).src = getAutoAvatarUrl(displayName || slug || 'User');
+                  (e.currentTarget as HTMLImageElement).src = getAutoAvatarUrl(initials);
                   setAvatarFallbackApplied(true);
                 }
               }}
@@ -306,13 +306,7 @@ export function Profile() {
                 <div className={styles.grid}>
                   <div className={styles.field}>
                     <label htmlFor="personType">Person type</label>
-                    <select
-                      id="personType"
-                      className={inputStyles.default_input}
-                      value={personType}
-                      onChange={(e) => setPersonType(e.target.value as PersonType)}
-                      disabled={loading}
-                    >
+                    <select id="personType" className={inputStyles.default_input} value={personType} onChange={(e) => setPersonType(e.target.value as PersonType)} disabled={loading}>
                       <option value="INDIVIDUAL">Individual</option>
                       <option value="COMPANY">Company</option>
                     </select>
@@ -320,68 +314,30 @@ export function Profile() {
 
                   <div className={styles.field}>
                     <label htmlFor="email">Email</label>
-                    <Input
-                      id="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      type="email"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                      required
-                    />
+                    <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" type="email" className={inputStyles.default_input} disabled={loading} required />
                   </div>
 
                   {personType === 'COMPANY' ? (
                     <div className={styles.field_full}>
                       <label htmlFor="businessName">Company / Trade name</label>
-                      <Input
-                        id="businessName"
-                        value={businessName}
-                        onChange={(e) => setBusinessName(e.target.value)}
-                        placeholder="Your Company LLC"
-                        className={inputStyles.default_input}
-                        disabled={loading}
-                      />
+                      <Input id="businessName" value={businessName} onChange={(e) => setBusinessName(e.target.value)} placeholder="Your Company LLC" className={inputStyles.default_input} disabled={loading} />
                     </div>
                   ) : (
                     <>
                       <div className={styles.field}>
                         <label htmlFor="firstName">First name</label>
-                        <Input
-                          id="firstName"
-                          value={firstName}
-                          onChange={(e) => setFirstName(e.target.value)}
-                          placeholder="Your first name"
-                          className={inputStyles.default_input}
-                          disabled={loading}
-                          required
-                        />
+                        <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} placeholder="Your first name" className={inputStyles.default_input} disabled={loading} required />
                       </div>
                       <div className={styles.field}>
                         <label htmlFor="lastName">Last name</label>
-                        <Input
-                          id="lastName"
-                          value={lastName}
-                          onChange={(e) => setLastName(e.target.value)}
-                          placeholder="Your last name"
-                          className={inputStyles.default_input}
-                          disabled={loading}
-                          required
-                        />
+                        <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} placeholder="Your last name" className={inputStyles.default_input} disabled={loading} required />
                       </div>
                     </>
                   )}
 
                   <div className={styles.field}>
                     <label htmlFor="phoneCountry">Phone country</label>
-                    <select
-                      id="phoneCountry"
-                      className={inputStyles.default_input}
-                      value={phoneCountry}
-                      onChange={(e) => setPhoneCountry(e.target.value)}
-                      disabled={loading}
-                    >
+                    <select id="phoneCountry" className={inputStyles.default_input} value={phoneCountry} onChange={(e) => setPhoneCountry(e.target.value)} disabled={loading}>
                       <option value="BR">Brazil (+55)</option>
                       <option value="US">United States (+1)</option>
                       <option value="PT">Portugal (+351)</option>
@@ -398,15 +354,7 @@ export function Profile() {
 
                   <div className={styles.field}>
                     <label htmlFor="phone">Phone</label>
-                    <Input
-                      id="phone"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Digits only"
-                      inputMode="tel"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))} placeholder="Digits only" inputMode="tel" className={inputStyles.default_input} disabled={loading} />
                   </div>
                 </div>
 
@@ -414,61 +362,25 @@ export function Profile() {
                 <div className={styles.grid}>
                   <div className={styles.field}>
                     <label htmlFor="documentType">Document type</label>
-                    <select
-                      id="documentType"
-                      className={inputStyles.default_input}
-                      value={documentType}
-                      onChange={(e) => setDocumentType(e.target.value as DocumentType)}
-                      disabled={loading}
-                    >
+                    <select id="documentType" className={inputStyles.default_input} value={documentType} onChange={(e) => setDocumentType(e.target.value as DocumentType)} disabled={loading}>
                       <option value="CPF">CPF</option>
                       <option value="CNPJ">CNPJ</option>
-                      <option value="NATIONAL_ID">National ID</option>
-                      <option value="PASSPORT">Passport</option>
-                      <option value="SSN">SSN</option>
-                      <option value="TIN">TIN</option>
-                      <option value="VAT">VAT</option>
                     </select>
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="documentNumber">Document number</label>
-                    <Input
-                      id="documentNumber"
-                      value={documentNumber}
-                      onChange={(e) => setDocumentNumber(e.target.value.replace(/\s/g, ''))}
-                      placeholder="Document"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="documentNumber" value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value.replace(/\s/g, ''))} placeholder="Document" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="cpf">CPF</label>
-                    <Input
-                      id="cpf"
-                      value={cpf}
-                      onChange={(e) => setCpf(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Digits only"
-                      inputMode="numeric"
-                      maxLength={11}
-                      className={inputStyles.default_input}
-                      disabled={loading || personType === 'COMPANY'}
-                    />
+                    <Input id="cpf" value={cpf} onChange={(e) => setCpf(e.target.value.replace(/\D/g, ''))} placeholder="Digits only" inputMode="numeric" maxLength={11} className={inputStyles.default_input} disabled={loading || personType === 'COMPANY'} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="cnpj">CNPJ</label>
-                    <Input
-                      id="cnpj"
-                      value={cnpj}
-                      onChange={(e) => setCnpj(e.target.value.replace(/\D/g, ''))}
-                      placeholder="Digits only"
-                      inputMode="numeric"
-                      maxLength={14}
-                      className={inputStyles.default_input}
-                      disabled={loading || personType === 'INDIVIDUAL'}
-                    />
+                    <Input id="cnpj" value={cnpj} onChange={(e) => setCnpj(e.target.value.replace(/\D/g, ''))} placeholder="Digits only" inputMode="numeric" maxLength={14} className={inputStyles.default_input} disabled={loading || personType === 'INDIVIDUAL'} />
                   </div>
                 </div>
               </div>
@@ -478,97 +390,42 @@ export function Profile() {
                 <div className={styles.grid}>
                   <div className={styles.field_full}>
                     <label htmlFor="addressLine1">Address (line 1)</label>
-                    <Input
-                      id="addressLine1"
-                      value={addressLine1}
-                      onChange={(e) => setAddressLine1(e.target.value)}
-                      placeholder="Street, avenue, etc."
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="addressLine1" value={addressLine1} onChange={(e) => setAddressLine1(e.target.value)} placeholder="Street, avenue, etc." className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="addressNumber">Number</label>
-                    <Input
-                      id="addressNumber"
-                      value={addressNumber}
-                      onChange={(e) => setAddressNumber(e.target.value)}
-                      placeholder="Number"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="addressNumber" value={addressNumber} onChange={(e) => setAddressNumber(e.target.value)} placeholder="Number" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="addressLine2">Complement</label>
-                    <Input
-                      id="addressLine2"
-                      value={addressLine2}
-                      onChange={(e) => setAddressLine2(e.target.value)}
-                      placeholder="Apt, suite…"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="addressLine2" value={addressLine2} onChange={(e) => setAddressLine2(e.target.value)} placeholder="Apt, suite…" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="neighborhood">Neighborhood / Province</label>
-                    <Input
-                      id="neighborhood"
-                      value={neighborhood}
-                      onChange={(e) => setNeighborhood(e.target.value)}
-                      placeholder="Neighborhood/Province"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="neighborhood" value={neighborhood} onChange={(e) => setNeighborhood(e.target.value)} placeholder="Neighborhood/Province" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="city">City</label>
-                    <Input
-                      id="city"
-                      value={city}
-                      onChange={(e) => setCity(e.target.value)}
-                      placeholder="City"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="city" value={city} onChange={(e) => setCity(e.target.value)} placeholder="City" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="stateRegion">State/Region</label>
-                    <Input
-                      id="stateRegion"
-                      value={stateRegion}
-                      onChange={(e) => setStateRegion(e.target.value)}
-                      placeholder="State/Region"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="stateRegion" value={stateRegion} onChange={(e) => setStateRegion(e.target.value)} placeholder="State/Region" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="postalCode">ZIP / Postal Code</label>
-                    <Input
-                      id="postalCode"
-                      value={postalCode}
-                      onChange={(e) => setPostalCode(e.target.value.replace(/\s/g, ''))}
-                      placeholder="ZIP/Postal code"
-                      className={inputStyles.default_input}
-                      disabled={loading}
-                    />
+                    <Input id="postalCode" value={postalCode} onChange={(e) => setPostalCode(e.target.value.replace(/\s/g, ''))} placeholder="ZIP/Postal code" className={inputStyles.default_input} disabled={loading} />
                   </div>
 
                   <div className={styles.field}>
                     <label htmlFor="country">Country</label>
-                    <select
-                      id="country"
-                      className={inputStyles.default_input}
-                      value={country}
-                      onChange={(e) => setCountry(e.target.value)}
-                      disabled={loading}
-                    >
+                    <select id="country" className={inputStyles.default_input} value={country} onChange={(e) => setCountry(e.target.value)} disabled={loading}>
                       <option value="BR">Brazil</option>
                       <option value="US">United States</option>
                       <option value="PT">Portugal</option>
@@ -585,21 +442,11 @@ export function Profile() {
                 </div>
               </div>
 
-              <Button
-                type="submit"
-                label={loading ? 'Saving…' : 'Save changes'}
-                onClick={() => {}}
-                disabled={loading}
-                className={`${buttonStyles.default_button} ${buttonStyles['default_button--primary']} ${styles.cta_button}`}
-              />
+              <Button type="submit" label={loading ? 'Saving…' : 'Save changes'} onClick={() => {}} disabled={loading} className={`${buttonStyles.default_button} ${buttonStyles['default_button--primary']} ${styles.cta_button}`} />
             </form>
 
             {message && (
-              <div
-                className={`${styles.popup} ${status === 'success' ? styles.popup_success : styles.popup_error}`}
-                role={status === 'error' ? 'alert' : 'status'}
-                aria-live={status === 'error' ? 'assertive' : 'polite'}
-              >
+              <div className={`${styles.popup} ${status === 'success' ? styles.popup_success : styles.popup_error}`} role={status === 'error' ? 'alert' : 'status'} aria-live={status === 'error' ? 'assertive' : 'polite'}>
                 {message}
               </div>
             )}

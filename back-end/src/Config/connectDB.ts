@@ -11,6 +11,7 @@ const pool = new Pool({ connectionString: process.env.POSTGRESQL_CONNECTION_LINE
     console.log('Database connected successfully');
   } catch (error: any) {
     console.log(`Database connection error: ${error.message}`);
+    console.log(process.env.POSTGRESQL_CONNECTION_LINE);
   }
 })();
 
