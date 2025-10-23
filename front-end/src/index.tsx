@@ -13,6 +13,7 @@ import { Status } from './pages/status';
 import { CreateProjectPage } from './pages/CreateProjectPage';
 import { Profile } from './pages/profile';
 import { HomePage } from './pages/HomePage';
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
