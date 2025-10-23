@@ -1,6 +1,7 @@
 create extension if not exists pgcrypto;
 create extension if not exists moddatetime;
 
+drop table if exists pages cascade;
 drop table if exists user_roles cascade;
 drop table if exists role_permissions cascade;
 drop table if exists permissions cascade;
@@ -60,11 +61,27 @@ create table if not exists user_roles (
   primary key (user_id, role_id, project_id)
 );
 
+create table if not exists pages (
+  id            uuid primary key default gen_random_uuid(),
+  project_id    uuid not null references stores(id) on delete cascade,
+  path          text not null,
+  title         text,
+  body          jsonb,
+  meta          jsonb,
+  status        text not null default 'draft' check (status in ('draft','published','archived')),
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz,
+  published_at  timestamptz,
+  unique (project_id, path)
+);
+
 create index if not exists idx_stores_owner_id           on stores(owner_id);
 create index if not exists idx_user_roles_user_project   on user_roles(user_id, project_id);
 create index if not exists idx_user_roles_project        on user_roles(project_id);
 create index if not exists idx_role_permissions_role     on role_permissions(role_id);
 create index if not exists idx_role_permissions_perm     on role_permissions(permission_id);
+create index if not exists idx_pages_project             on pages(project_id);
+create index if not exists idx_pages_project_status      on pages(project_id, status);
 
 create trigger set_users_updated_at
 before update on users
@@ -80,4 +97,8 @@ for each row execute procedure moddatetime (updated_at);
 
 create trigger set_permissions_updated_at
 before update on permissions
+for each row execute procedure moddatetime (updated_at);
+
+create trigger set_pages_updated_at
+before update on pages
 for each row execute procedure moddatetime (updated_at);

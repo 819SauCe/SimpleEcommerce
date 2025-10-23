@@ -57,19 +57,10 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
               prev.lastName === fresh.lastName &&
               prev.image === fresh.image
             ) return prev;
-
-            localStorage.setItem('userId', fresh.id);
-            localStorage.setItem('userFirstName', fresh.firstName);
-            localStorage.setItem('userLastName', fresh.lastName);
-            localStorage.setItem('userImage', fresh.image);
             return fresh;
           });
         } else if (res.status === 401) {
           setUser(null);
-          localStorage.removeItem('userId');
-          localStorage.removeItem('userFirstName');
-          localStorage.removeItem('userLastName');
-          localStorage.removeItem('userImage');
         } else {
           if (user === undefined) setUser(null);
         }

@@ -1,5 +1,4 @@
 import "./styles/global.scss";
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Header } from './components/Header';
@@ -11,7 +10,7 @@ import { Footer } from './components/Footer';
 import { NotFound } from './pages/not-found';
 import { Pricing } from './pages/pricing';
 import { Status } from './pages/status';
-import CreateProjectPage from './pages/createProjectPage';
+import { CreateProjectPage } from './pages/createProjectPage';
 import { Profile } from './pages/profile';
 import { HomePage } from './pages/homePage';
 

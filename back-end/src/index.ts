@@ -1,26 +1,32 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
-import type { RequestHandler } from 'express';
-import { validCors } from './Config/setup';
-import { setup } from './Config/setup';
-import { UserLogin, Logout, UserMe, UserRegister, getUsers } from './Services/UsersService';
-import { requireTenantId } from './middlewares/requireTenantId';
-import { IssueOneTimeToken } from './Controllers/tokenController';
+import { validCors, setup } from './Config/setup';
+import { authLimiter, globalLimiter } from './Config/limiter';
 import { requireSession } from './middlewares/requireSession';
 import { requireOneTimeBearer } from './middlewares/oneTimeBearer';
-import { authLimiter, globalLimiter } from './Config/limiter';
-import { createProject, getProjectById } from './Services/ProjectsService';
-import { upsertPageByPath, listPages, getPageByPath } from './Services/PagesService';
+import { requireTenantId } from './middlewares/requireTenantId';
 import { resolveTenant } from './middlewares/tenant';
-import { updateDataUser } from './Services/UsersService';
+import { IssueOneTimeToken } from './Controllers/tokenController';
+import { createProject, getProjectById, listMyProjects } from './Services/ProjectsService';
+import { upsertPageByPath, listPages, getPageByPath } from './Services/PagesService';
+import {
+  UserLogin,
+  Logout,
+  UserMe,
+  UserRegister,
+  getUsers,
+  updateDataUser,
+} from './Services/UsersService';
+
 
 const app = express();
 const corsOptions = { origin: setup.cors, credentials: true };
 
 const useStoreParamAsTenant: RequestHandler = (req, _res, next) => {
-  (req as any).tenantId = Number(req.params.storeId);
+  const { storeId, projectsId, projectId } = req.params as any;
+  (req as any).tenantId = Number(storeId ?? projectsId ?? projectId);
   next();
 };
 
@@ -41,6 +47,7 @@ app.patch('/me', requireSession, requireOneTimeBearer, updateDataUser);
 app.get('/users', requireSession, requireOneTimeBearer, requireTenantId, getUsers);
 
 app.post('/projects', requireSession, requireOneTimeBearer, createProject);
+app.get('/projects', requireSession, requireOneTimeBearer, listMyProjects);
 app.get('/projects/:projectId', requireSession, requireOneTimeBearer, getProjectById);
 
 app.post('/projects/:projectsId/pages', requireSession, requireOneTimeBearer, useStoreParamAsTenant, upsertPageByPath);
