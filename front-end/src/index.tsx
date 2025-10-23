@@ -10,9 +10,9 @@ import { Footer } from './components/Footer';
 import { NotFound } from './pages/not-found';
 import { Pricing } from './pages/pricing';
 import { Status } from './pages/status';
-import { CreateProjectPage } from './pages/createProjectPage';
+import { CreateProjectPage } from './pages/CreateProjectPage';
 import { Profile } from './pages/profile';
-import { HomePage } from './pages/homePage';
+import { HomePage } from './pages/HomePage';
 
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
